@@ -1,4 +1,5 @@
 import { FC } from 'react'
+import '../styles/global.css'
 
 interface MyAppProps {
   Component: FC
