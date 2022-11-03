@@ -1,3 +1,4 @@
+import { FormEvent, useRef } from 'react'
 import Image from 'next/image'
 import appPreviewImg from '../assets/app-nlw-copa-preview.png'
 import logoImg from '../assets/logo.svg'
@@ -12,6 +13,25 @@ interface HomeProps {
 }
 
 export default function Home(props: HomeProps) {
+  const poolTitleRef = useRef<HTMLInputElement>(null)
+
+  async function createPool(event: FormEvent) {
+    event.preventDefault()
+    const poolTitle = poolTitleRef.current.value
+
+    try {
+      const { data } = await api.post('/pools', { title: poolTitle })
+
+      await navigator.clipboard.writeText(data.code)
+
+      alert('Bolão criado com sucesso, o código foi copiado para a área de transferência!')
+
+      poolTitleRef.current.value = ''
+    } catch (error) {
+      alert('Falha ao criar o bolão, tente novamente!')
+    }
+  }
+
   return (
     <div className='max-w-[1124px] h-screen mx-auto grid grid-cols-2 gap-28 items-center'>
       <main>
@@ -28,12 +48,13 @@ export default function Home(props: HomeProps) {
           </strong>
         </div>
 
-        <form className='mt-10 flex gap-2'>
+        <form onSubmit={createPool} className='mt-10 flex gap-2'>
           <input
-            className='flex-1 px-6 py-4 rounded bg-gray-800 border border-gray-600 text-sm'
+            className='flex-1 px-6 py-4 rounded bg-gray-800 border border-gray-600 text-sm text-gray-100'
             type="text"
             required
             placeholder="Qual nome do seu bolão?"
+            ref={poolTitleRef}
           />
           <button
             className='bg-yellow-500 px-6 py-4 rounded text-gray-900 font-bold text-sm uppercase hover:bg-yellow-700'
